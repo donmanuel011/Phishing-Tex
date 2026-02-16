@@ -1,0 +1,24 @@
+<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .magnifying-circle { fill: none; stroke: #0066CC; stroke-width: 8; }
+      .magnifying-handle { fill: none; stroke: #0066CC; stroke-width: 8; stroke-linecap: round; }
+      .phishing-hook { fill: none; stroke: #FF4444; stroke-width: 4; stroke-linecap: round; }
+      .warning-dot { fill: #FF4444; }
+    </style>
+  </defs>
+  
+  <!-- Magnifying glass circle -->
+  <circle cx="70" cy="70" r="52" class="magnifying-circle"/>
+  
+  <!-- Magnifying glass handle -->
+  <line x1="105" y1="105" x2="155" y2="155" class="magnifying-handle"/>
+  
+  <!-- Phishing hook inside magnifying glass (red) -->
+  <path d="M 65 50 Q 85 50 85 75 Q 85 90 70 95" class="phishing-hook"/>
+  <circle cx="70" cy="95" r="3" class="warning-dot"/>
+  
+  <!-- Warning indicator -->
+  <circle cx="80" cy="50" r="12" fill="#FF4444" stroke="#000" stroke-width="1.5"/>
+  <text x="80" y="56" font-size="16" font-weight="bold" text-anchor="middle" fill="#FFF">!</text>
+</svg>
