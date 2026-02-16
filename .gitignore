@@ -15,7 +15,6 @@ __pycache__/
 *.pyc
 
 # ML models
-ml-service/models/*.pkl
 
 # Logs
 *.log
