@@ -20,9 +20,7 @@ model = joblib.load(MODEL_PATH)
 class URLRequest(BaseModel):
     url: str
 
-@app.get("/")
-def root():
-    return {"status": "ok", "service": "ml-service"}
+
 
 @app.post("/predict")
 def predict(data: URLRequest):
@@ -30,3 +28,6 @@ def predict(data: URLRequest):
     df = pd.DataFrame([features])
     probability = float(model.predict_proba(df)[0][1])
     return {"mlScore": probability}
+@app.get("/")
+def root():
+    return {"message": "Phishing ML Service is running 🚀"}
