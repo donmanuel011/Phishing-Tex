@@ -11,38 +11,76 @@ const { initRedis } = require("./src/services/cache");
 
 const app = express();
 
-// Needed on Render/Railway/Heroku so req.ip works correctly behind proxy (rate-limit)
+/**
+ * ✅ Needed on Render/Railway/Heroku so req.ip works correctly behind proxy
+ * (important for rate limiting + logs)
+ */
 app.set("trust proxy", 1);
 
+/**
+ * ✅ Security + parsers
+ */
 app.use(helmet());
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
-// ✅ CORS: allow localhost + your deployed frontend (set FRONTEND_URL in env)
+/**
+ * ✅ CORS
+ * - Allows localhost during development
+ * - Allows your deployed frontend using FRONTEND_URL env
+ *   Example: FRONTEND_URL=https://phishing-tex-1.onrender.com
+ */
 const allowedOrigins = [
   "http://localhost:3000",
-  process.env.FRONTEND_URL, // e.g. https://your-app.vercel.app
+  process.env.FRONTEND_URL, // set this in Render backend env
 ].filter(Boolean);
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow tools like curl/postman (no origin)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// Preflight
+app.options("*", cors());
+
+/**
+ * ✅ Rate limiter after CORS
+ */
 app.use(limiter);
 
-app.get("/", (req, res) => res.json({ status: "ok" }));
+/**
+ * ✅ Routes
+ */
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Phish Detector Backend is running 🚀",
+  });
+});
+
 app.use("/api", scanRoutes);
 app.use("/api/admin", adminRoutes);
 
+/**
+ * ✅ Start server
+ */
 async function start() {
   if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI is missing in environment variables");
   }
+
   if (!process.env.ML_SERVICE_URL) {
-    console.warn("⚠️ ML_SERVICE_URL is not set. /api/scan may fail.");
+    console.warn("⚠️ ML_SERVICE_URL not set. /api/scan may fail.");
   }
 
   await mongoose.connect(process.env.MONGO_URI);
@@ -60,6 +98,6 @@ async function start() {
 }
 
 start().catch((e) => {
-  console.error("❌ Startup error:", e);
+  console.error("❌ Startup error:", e.message || e);
   process.exit(1);
 });
