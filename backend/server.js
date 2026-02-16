@@ -51,7 +51,8 @@ app.use(
 );
 
 // Preflight
-app.options("*", cors());
+app.options("/*", cors());
+
 
 /**
  * ✅ Rate limiter after CORS
