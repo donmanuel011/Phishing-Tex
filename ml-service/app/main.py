@@ -3,6 +3,9 @@ from pydantic import BaseModel
 import joblib
 import pandas as pd
 from pathlib import Path
+from pathlib import Path
+MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "model.pkl"
+model = joblib.load(MODEL_PATH)
 
 from app.features import extract_features
 
